@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-navbar>
+      <ion-title>
+         Logbestanden overzicht 
+      </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+   <ion-list>
+      <ion-card
+         class="story"
+         text-wrap
+         *ngFor="let log of logs | async">
+         <ion-item>
+            <h2>{{ log.title }}</h2>
+            <p>{{ log.summary }}</p>
+
+            <section class="multiples">
+               <h3>Locatie</h3>
+	          <ion-chip
+                *ngFor="let tag of log.tags"
+                padding-left
+                padding-right
+                margin-right>{{ tag.name }}</ion-chip>
+            </section>
+
+            <input
+            type="hidden"
+            name="logId" >
+        
+         </ion-item>
+
+
+         <div class="manage-record" padding>
+            <button
+               ion-button
+               text-center
+               color="primary"
+               (click)="editLog(log)">Wijzig</button>
+
+            <button
+               ion-button
+               text-center
+               color="danger"
+               (click)="deleteLog(log)">Verwijder</button>
+         </div>
+      </ion-card>
+   </ion-list>
+
+  <ion-fab right bottom>
+    <button ion-fab (click)="addRecord()">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-fab>
+</ion-content>

@@ -1,0 +1,94 @@
+<ion-header>
+   <ion-toolbar>
+      <ion-title>
+         {{ title }}
+      </ion-title>
+      <ion-buttons start>
+         <button ion-button color="primary" (click)="closeModal()">
+            <span showWhen="ios">Annuleer</span>
+            <ion-icon name="md-close" showWhen="android,windows"></ion-icon>
+         </button>
+      </ion-buttons>
+   </ion-toolbar>
+</ion-header>
+<ion-content>
+   <form [formGroup]="form" (ngSubmit)="saveLog(form.value)">
+
+      <ion-item-divider color="light">
+         <div *ngIf="!isEditable">
+            Nieuwe log aanmaken 
+         </div>
+
+         <div *ngIf="isEditable">
+            Log updaten 
+         </div>
+      </ion-item-divider>
+
+
+      <ion-item>
+         <ion-label stacked>Titel:</ion-label>
+         <ion-input
+            type="text"
+            formControlName="name"
+            [(ngModel)]="logName"></ion-input>
+      </ion-item>
+
+       <ion-item>
+         <span
+            ion-text
+            color="danger"
+            block
+            text-center
+            padding-top
+            padding-bottom
+            (click)="selectImage()">Kies een afbeelding</span>
+            <input
+               type="hidden"
+               name="image"
+               formControlName="image"
+               [(ngModel)]="logImage">
+            <img [src]="logImage">
+   	  </ion-item>
+
+
+      <ion-item>
+         <ion-label stacked>Locatie:</ion-label>
+         <ion-select
+            formControlName="tags"
+            multiple="true"
+            [(ngModel)]="logTags">
+             <ion-option value="Keuken">Keuken</ion-option>
+             <ion-option value="WC">WC</ion-option>
+             <ion-option value="Gang">Gang</ion-option>
+             <ion-option value="Douche">Douche</ion-option>
+             <ion-option value="Anders">Anders</ion-option>
+         </ion-select>
+      </ion-item>
+
+      <ion-item>
+         <ion-label stacked>Beschrijving situatie:</ion-label>
+         <ion-textarea
+			      rows="6"
+            formControlName="summary"
+            [(ngModel)]="logSummary"></ion-textarea>
+      </ion-item>
+
+      <ion-item>
+         <button
+           ion-button
+           block
+           color="primary"
+           text-center
+           [disabled]="!form.valid">
+            <div *ngIf="!isEditable">
+               Nieuw log aanmaken 
+            </div>
+
+            <div *ngIf="isEditable">
+               Log updaten 
+            </div>
+         </button>
+      </ion-item>
+
+   </form>
+</ion-content>

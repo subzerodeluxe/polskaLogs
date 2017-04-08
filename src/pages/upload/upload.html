@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Upload Images</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+ <img [src]="currentImage" style="width: 100%" [hidden]="currentImage === null">
+  <h3 [hidden]="currentImage !== null" text-center>Please Select Image!</h3>
+
+  <button ion-button full icon-left (click)="presentActionSheet()">
+   <ion-icon name="camera"></ion-icon>
+   Capture Image
+  </button>
+
+  <button ion-button full icon-left (click)="uploadImage()" [disabled]="currentImage === null">
+   <ion-icon name="cloud-upload"></ion-icon>
+   Upload Image
+  </button>
+</ion-content>
