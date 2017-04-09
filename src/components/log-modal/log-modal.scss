@@ -1,3 +1,19 @@
-log-modal {
+.ios, .md {
+   page-log-modal {
+        
+        ion-navbar {
+            -webkit-box-shadow: 0px -3px 29px -4px rgba(0,0,0,0.75);
+            -moz-box-shadow: 0px -3px 29px -4px rgba(0,0,0,0.75);
+            box-shadow: 0px -3px 29px -4px rgba(0,0,0,0.75);
+        }
 
+         ion-input, ion-textarea, .select-text {
+             color: #fff; 
+         }
+
+         .item-input .label-md, .item-select .label-md, .item-datetime .label-md {
+             color: #2d2828; 
+         }
+
+    }
 }

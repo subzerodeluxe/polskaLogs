@@ -11,10 +11,10 @@ export class ImageService {
 
    constructor(public http: Http) { }
 
-   selectImage() : Promise<any> {
+   selectImage(sourceType): Promise<any> {
       return new Promise(resolve => {
          let cameraOptions = {
-             sourceType         : Camera.PictureSourceType.PHOTOLIBRARY,
+             sourceType         : sourceType, 
              destinationType    : Camera.DestinationType.DATA_URL,
              quality            : 100,
              targetWidth        : 320,

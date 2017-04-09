@@ -24,8 +24,7 @@ export class LogService {
                observer.next(logs);
                observer.complete();
             },
-            (error) =>
-            {
+            (error) => {
               console.log("Observer error: ", error);
               console.dir(error);
               observer.error(error)
@@ -41,6 +40,7 @@ export class LogService {
    }
 
    deleteLog(id): Promise<any> {
+     console.log("Dit id komt binnen: " + id); 
       return new Promise((resolve) => {
          let ref = firebase.database().ref('logs').child(id);
          ref.remove();

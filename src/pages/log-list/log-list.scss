@@ -1,33 +1,50 @@
-page-log-list {
-   .story {
-      h2 {
-         font-weight: bold;
-         font-size: 2.0rem;
-      }
+.ios, .md {
+    page-log-list {
+        
+        ion-navbar {
+            -webkit-box-shadow: 0px -3px 29px -4px rgba(0,0,0,0.75);
+            -moz-box-shadow: 0px -3px 29px -4px rgba(0,0,0,0.75);
+            box-shadow: 0px -3px 29px -4px rgba(0,0,0,0.75);
+        }
 
-      small {
-         font-size: 1.4rem;
-      }
+        ion-card {
 
-      p {
-         padding: 1.5em 0 0 0;
-      }
-   }
+            background-color: #ffffff; 
+            max-height: 800px; 
+            border-radius: 0; 
+            
+            h2 {
+                margin: 20px; 
+                font-weight: bold; 
+            }
 
-   .multiples {
-      margin: 2em 0 0 0;
+            h3 {
+                font-weight: bold; 
+                padding-bottom: 3px; 
+            }
 
+            ion-card-content {
+                font-size: 0.9em;
+                opacity: 0.5;
+                margin-left: 5px;
+                margin-right: 5px; 
+            }
 
-      h3 {
-         font-weight: bold;
-         padding: 0 0 0.5em 0;
-      }
-   }
+            ion-card-header {
+                padding: 0; 
+            }
 
-   .manage-record {
-      button {
-      	width: 40%;
-      }
-   }
+            .multiples {
+                margin: 10px; 
+                margin-left: 22px;
+            }
+
+            .date-box {
+                padding-top: 10px; 
+                margin: 10px; 
+                margin-left: 22px; 
+            }
+        }
+    }
 }
 

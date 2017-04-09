@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController, ViewController, NavParams, LoadingController } from 'ionic-angular';
+import { NavController, ViewController, NavParams, AlertController, ActionSheetController, ToastController } from 'ionic-angular';
 import { AngularFire, FirebaseListObservable } from 'angularfire2';
 import { ImageService } from "../../providers/image-service";
 import { LogService } from "../../providers/log-service";
+import { LogListPage } from "../../pages/log-list/log-list";
+import { Camera } from 'ionic-native';
+
 
 @Component({
   selector: 'page-log-modal',
@@ -11,28 +14,32 @@ import { LogService } from "../../providers/log-service";
 })
 
 export class LogModalPage {
-
-   private loading: any; 
+  logPage = LogListPage; 
 
    public form: any;
    public logs: FirebaseListObservable<any[]>;
    public logName: any = '';
+   public logDate = this.formatDate(new Date());  
    public logSummary: any = '';
    public logTags: any = [];
 
-   public logImage: any     = '';
+   public logImage: any = '';
    public logId: string  = '';
    public isEditable: boolean = false;
 
 
    constructor(public navCtrl: NavController, public params: NavParams,
-      private formBuilder: FormBuilder, private loadingCtrl: LoadingController, private ngFire: AngularFire,
-      public viewCtrl: ViewController, private logService: LogService, private imageService: ImageService)
-   {
+      private formBuilder: FormBuilder, private ngFire: AngularFire,
+      public viewCtrl: ViewController, 
+      private alertCtrl: AlertController, 
+      private toastCtrl: ToastController, 
+      private actionSheetCtrl: ActionSheetController,
+      private logService: LogService, private imageService: ImageService) {
       this.form = formBuilder.group({
          'summary': ['', Validators.minLength(10)],
          'name': ['', Validators.required],
          'image': ['', Validators.required],
+         'date': ['', Validators.required],
          'tags': ['', Validators.required]
       });
 
@@ -40,14 +47,16 @@ export class LogModalPage {
 
 
       if(params.get('isEdited')) {
-          let log 		= params.get('log'), k;
-
+          let log 		= params.get('log');
+    
           this.logName = log.title;
           this.logSummary = log.summary;
           this.logImage = log.image; 
-          this.logId = log.id;
+          this.logDate = log.date; 
+          this.logId = log.$key; 
+          console.log("Het logId wordt gezet? " + this.logId);
 
-          for(k in log.tags){
+          for(let k in log.tags){
              this.logTags.push(log.tags[k].name);
           }
 
@@ -56,14 +65,12 @@ export class LogModalPage {
    }
 
    saveLog(val) {
-
-     this.displayPreloader(); 
-
       let title     : string	= this.form.controls["name"].value,
           summary   : string 	= this.form.controls["summary"].value,
           image     : string	= this.form.controls["image"].value,
-          tags      : any       = this.form.controls["tags"].value,
-          types     : any       = [],
+          tags      : any     = this.form.controls["tags"].value,
+          date      : any     = this.form.controls["date"].value, 
+          types     : any     = [],
   	      k         : any;
 
           for(k in tags) {
@@ -82,11 +89,12 @@ export class LogModalPage {
                this.logService.updateDatabase(this.logId, {
 	              title    : title,
 	              summary  : summary,
+                date     : date, 
 	              image    : uploadedImage,
 	              tags     : types
 	           })
                .then((data) => {
-                  this.hidePreloader();
+                  
                });
 
             });
@@ -95,10 +103,11 @@ export class LogModalPage {
            this.logService.updateDatabase(this.logId,{
 	          title    : title,
 	          summary  : summary,
+            date     : date, 
 	          tags   : types
 	       })
            .then((data) => {
-              this.hidePreloader();
+             this.showMessage("Log is succesvol geupdated")
            });
 	     }
 
@@ -111,11 +120,12 @@ export class LogModalPage {
 	           title    : title,
 	           image    : uploadedImage,
 	           summary  : summary,
+             date     : date, 
 	           tags     : types
 	           
 	        })
             .then((data) => {
-               this.hidePreloader();
+              this.showMessage("Nieuw logbestand aangemaakt")
             });
          });
 
@@ -123,27 +133,100 @@ export class LogModalPage {
       this.closeModal(true);
   }
 
-  closeModal(val = null){
+  deleteLog() {
+    console.log("What is log? " + this.logId); 
+    if(this.isEditable) {
+      
+      this.logService.deleteLog(this.logId)
+      .then((data) => {
+        this.navCtrl.setRoot(this.logPage)
+      }); 
+    }
+  }
+ 
+  closeModal(val = null) {
       this.viewCtrl.dismiss(val);
    }
 
 
-   selectImage(){
-      this.imageService.selectImage()
-      .then((data) => {
-         this.logImage = data;
+   selectImage() {
+      this.presentActionSheet();
+   }
+
+  showMessage(message) {
+      let alert = this.alertCtrl.create({
+        title: 'Gelukt!',
+        message: message,
+        buttons: ['OK']
       });
-   }
+      alert.present(); 
+    }
 
-   displayPreloader() {
-        this.loading = this.loadingCtrl.create({
-         content: 'Please wait...'
+  // Show the Action Sheet for library or camera selection
+  presentActionSheet() {
+    let actionSheet = this.actionSheetCtrl.create({
+      title: 'Select an image source',
+      buttons: [
+        {
+          text: 'Load from Library',
+          handler: () => {
+            //this.takePicture(Camera.PictureSourceType.PHOTOLIBRARY);
+            this.imageService.selectImage(Camera.PictureSourceType.PHOTOLIBRARY)
+             .then((data) => {
+                this.logImage = data;
+                this.presentToast("Upload Finished");
+              });
+          }
+        },
+        {
+          text: 'Use Camera',
+          handler: () => {
+            this.imageService.selectImage(Camera.PictureSourceType.CAMERA)
+             .then((data) => {
+              this.logImage = data;
+              this.presentToast("Upload Finished");
+            });
+            //this.takePicture(Camera.PictureSourceType.CAMERA);
+          }
+        },
+          {
+          text: 'Cancel',
+          role: 'cancel'
+          }
+        ]
       });
+      actionSheet.present();
+    }
 
-      this.loading.present();
-   }
+    // Display a toast message at the top
+    presentToast(text) {
+      let toast = this.toastCtrl.create({
+        message: text,
+        duration: 3000,
+        position: 'top'
+      });
+      toast.present();
+  }
 
-   hidePreloader() {
-     this.loading.dismiss();
-   }
+  formatDate(date) {
+    
+    var monthNames = [
+    "Januari", "Februari", "Maart",
+    "April", "Mei", "Juni", "Juli",
+    "Augustus", "September", "Oktober",
+    "November", "December"
+    ];
+
+    var dayNames = [
+      "Zondag", "Maandag", "Dinsdag", "Woensdag",
+      "Donderdag", "Vrijdag", "Zaterdag", 
+    ];
+
+    var day = date.getDate();
+    var dayIndex = date.getDay(); 
+    var monthIndex = date.getMonth();
+    var year = date.getFullYear();
+
+    return dayNames[dayIndex] + ' ' + day + ' ' + monthNames[monthIndex] + ' ' + year;
+  } // formatDate() 
 }

@@ -1,25 +1,32 @@
-<ion-header>
-  <ion-navbar>
-      <ion-title>
+<ion-header no-border>
+  <ion-navbar color="primary">
+      <ion-title text-center>
          Logbestanden overzicht 
       </ion-title>
-    <ion-buttons end>
-      <button ion-button icon-only menuToggle>
-        <ion-icon name="menu"></ion-icon>
-      </button>
+       <ion-buttons end>
+       <button
+          ion-button
+          icon-only
+          (click)="addRecord()">
+  	  <ion-icon name="add"></ion-icon>
+       </button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-   <ion-list>
-      <ion-card
-         class="story"
-         text-wrap
-         *ngFor="let log of logs | async">
-         <ion-item>
-            <h2>{{ log.title }}</h2>
-            <p>{{ log.summary }}</p>
+<ion-content padding scrollbar-y-auto>
+      <ion-card color="light" text-wrap *ngFor="let log of logs | async">
+         <ion-card-header>
+            <div *ngIf="log.image">
+               <img [src]="log.image">
+               <!--<img src="http://placehold.it/600x400">--> 
+            </div>
+          <h2>{{ log.title }}</h2>
+         </ion-card-header>
+        
+        <ion-card-content>
+          {{ log.summary }}
+        </ion-card-content>
 
             <section class="multiples">
                <h3>Locatie</h3>
@@ -30,32 +37,21 @@
                 margin-right>{{ tag.name }}</ion-chip>
             </section>
 
-            <input
-            type="hidden"
-            name="logId" >
-        
-         </ion-item>
-
-
+            <section class="date-box">
+              <h3>Datum</h3>
+               {{ log.date }}
+            </section>
+            
+            
          <div class="manage-record" padding>
             <button
                ion-button
                text-center
                color="primary"
-               (click)="editLog(log)">Wijzig</button>
-
-            <button
-               ion-button
-               text-center
-               color="danger"
-               (click)="deleteLog(log)">Verwijder</button>
+               full 
+               (click)="showLog(log)">Bekijk log</button>
          </div>
       </ion-card>
-   </ion-list>
 
-  <ion-fab right bottom>
-    <button ion-fab (click)="addRecord()">
-      <ion-icon name="add"></ion-icon>
-    </button>
-  </ion-fab>
+
 </ion-content>
